@@ -178,9 +178,8 @@ MIT (c) 2026 Kritik Modi - see [LICENSE](LICENSE).
 
 <!--
 GitHub repo description (About field, set in repo settings):
-Build product decks from code instead of a slide editor: content as JSON, design
-as one HTML file, rendered to PDF and PPTX. One content file, many decks. Works
-with Claude Code, Codex and Cursor.
+Product decks from code, not a slide editor. JSON content, one HTML design file,
+rendered to PDF and PPTX.
 
 Suggested topics: claude-skill, claude-code, presentation, slides, pptx, pdf,
 playwright, deck-as-code, pitch-deck, developer-marketing
