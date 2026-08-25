@@ -1,0 +1,16 @@
+# Build output
+out/
+*.pdf
+*.pptx
+
+# Project-local working copies of the templates
+/deck.html
+/content.json
+
+__pycache__/
+*.pyc
+.DS_Store
+.venv/
+
+# docs/ holds the README image and is intentionally tracked
+!docs/

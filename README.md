@@ -1,0 +1,151 @@
+# Product deck as Code
+
+Build product decks from code instead of a slide editor. Content is JSON, the
+design is one HTML file, and headless Chrome renders it to a PDF at exactly
+PowerPoint's 16:9 page size. Export to `.pptx` if someone needs one.
+
+Pitch decks, investor overviews, one-pagers, sales decks, technical overviews,
+brochures, conference talks. One content file, many decks.
+
+![Slides rendered by the pipeline](docs/slides.png)
+
+```
+content.json ──► deck.html ──► headless Chrome ──► deck.pdf ──► deck.pptx
+     (words)      (design)        (layout)          (share)      (optional)
+```
+
+## Why this exists
+
+Nobody makes a deck once. The same twelve facts get recut as an investor
+overview, a sales deck, a one-pager and a technical brief. A month later the four
+versions disagree about the numbers, and nobody knows which is current.
+
+That is a version control problem wearing a design costume. So keep the content
+in one file, keep the design in another, and render whichever deck you need. A
+number changes in one place. A rebrand is a few CSS variables. A wording change
+shows up in a diff.
+
+## The core idea
+
+**Content and design never live in the same file.**
+
+`content.json` has the words. `deck.html` has the slide types and the brand.
+Neither knows about the other until build time. That is what makes recuts,
+rebrands and reviews cheap.
+
+## Install
+
+```bash
+git clone https://github.com/kritikmodi/product-deck-as-code.git
+cd product-deck-as-code
+pip install -r requirements.txt && playwright install chromium
+```
+
+**Any agent.** `AGENTS.md` at the repo root is read natively by Codex, Cursor,
+Copilot, Gemini CLI, Aider, Windsurf, Zed and others.
+
+**Claude Code / claude.ai.** Install as a skill so it loads on demand:
+
+```bash
+cp -r product-deck-as-code ~/.claude/skills/product-deck
+```
+
+**No agent at all.** Plain Python and a headless browser. No vendor SDK, no model
+API, nothing to sign up for.
+
+## Build a deck
+
+```bash
+cp templates/deck.html templates/content.example.json .
+mv content.example.json content.json
+
+python3 scripts/build.py                   # -> out/deck.pdf
+python3 scripts/build.py --png             # also one PNG per slide
+python3 scripts/export_pptx.py             # -> out/deck.pptx
+```
+
+The bundled example renders seven slides covering every slide type, so a clean
+clone produces a real deck before you have written anything.
+
+While writing, open `deck.html` in a browser and reload. It scrolls as a stack of
+slides on screen and paginates correctly when printed.
+
+## One content file, many decks
+
+Name the slides, then list which ones each audience gets:
+
+```json
+"cuts": {
+  "investor": ["hero", "problem", "how", "traction", "close"],
+  "onepager": ["hero", "capabilities", "close"]
+}
+```
+
+```bash
+python3 scripts/build.py --cut investor --out out/investor.pdf
+python3 scripts/build.py --cut onepager --out out/onepager.pdf
+```
+
+Every cut reads from the same slides, so they cannot drift apart.
+
+## Slide types
+
+| Type | For | Notes |
+|---|---|---|
+| `title` | the opening claim | eyebrow, two-line headline, proof chips |
+| `stats` | the problem, in numbers | three cards, alert-coloured figures |
+| `flow` | how it works | left-to-right steps, optional stat panels |
+| `features` | capability grid | up to six, two columns |
+| `table` | comparison | `+` accent cell, `-` alert cell |
+| `quote` | a customer sentence | the only slide where someone else talks |
+| `closing` | the ask | make it specific |
+
+Wrap a phrase in `~tildes~` to colour it with the accent, so copy stays free of
+markup. Adding a type is one function in `deck.html`; page sizing, footers,
+numbering and print rules are handled for you.
+
+## What's here
+
+| Path | |
+|---|---|
+| `SKILL.md` | the brief: pipeline, slide types, rules for good decks |
+| `scripts/build.py` | content + design to PDF, with cuts and PNG export |
+| `scripts/export_pptx.py` | PDF to PowerPoint, one image per slide |
+| `templates/deck.html` | the slide system and design tokens |
+| `templates/content.example.json` | a worked example of every slide type |
+| `references/DESIGN.md` | tokens, type scale, how to rebrand |
+| `references/SLIDE-TYPES.md` | what each type is for and how it fails |
+| `references/PITFALLS.md` | read before debugging |
+
+## Honest limits
+
+The PPTX contains one full-bleed image per slide. It presents correctly anywhere
+and survives being emailed, but the text is not editable in PowerPoint. That is
+the trade: wording changes belong in `content.json`, not in a copy of the file
+someone has on their laptop. If a colleague genuinely needs native editable
+shapes, this is the wrong tool.
+
+Dark decks look excellent on screen shares and projectors, and poor when printed
+or presented in a bright room. `references/DESIGN.md` covers inverting the
+tokens.
+
+This is for decks that are mostly type, numbers and diagrams, which is most
+product decks. It is not an illustration tool.
+
+## Related
+
+The same idea applied to video: [product-video-as-code](https://github.com/kritikmodi/product-video-as-code).
+
+## License
+
+MIT (c) 2026 Kritik Modi - see [LICENSE](LICENSE).
+
+<!--
+GitHub repo description (About field, set in repo settings):
+Build product decks from code instead of a slide editor: content as JSON, design
+as one HTML file, rendered to PDF and PPTX. One content file, many decks. Works
+with Claude Code, Codex and Cursor.
+
+Suggested topics: claude-skill, claude-code, presentation, slides, pptx, pdf,
+playwright, deck-as-code, pitch-deck, developer-marketing
+-->

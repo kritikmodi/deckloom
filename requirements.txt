@@ -1,0 +1,7 @@
+# Headless Chrome does the layout and the PDF export.
+# After installing, fetch the browser:  playwright install chromium
+playwright>=1.40
+
+# Optional, only for scripts/export_pptx.py
+pymupdf>=1.24
+python-pptx>=0.6

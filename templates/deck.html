@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Deck</title>
+<!--
+  Slide system for the product-deck-as-code pipeline.
+
+  Content never lives in here. build.py reads content.json and calls
+  window.__render(content), so the same design renders any deck and the same
+  content can render as several decks.
+
+  Contract with the pipeline:
+    window.__render(content, cut)  build the slides, return the count
+    window.__slides               [{i, type, title}] after rendering
+
+  Add a slide type by writing one function in TYPES below. Everything else
+  (page sizing, footers, numbering, print rules) is handled for you.
+-->
+<style>
+  :root{
+    /* Replace this block with your brand. Nothing else needs to change. */
+    --bg:#0B0F1F;
+    --surface:#151D31;
+    --surface-2:#19223A;
+    --line:rgba(255,255,255,.08);
+    --ink:#FFFFFF;
+    --ink-dim:rgba(255,255,255,.66);
+    --ink-faint:rgba(255,255,255,.38);
+    --accent:#2DD4BF;
+    --alert:#EC4899;
+    --sans:"Inter","SF Pro Display",-apple-system,"Helvetica Neue",Arial,sans-serif;
+    --mono:"SF Mono",Menlo,monospace;
+
+    --pad:72px;         /* slide margin */
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:#000}
+  body{font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+
+  /* 960x540 is 16:9 at a size where 1px == 1pt in the PDF. */
+  .slide{
+    position:relative;width:960px;height:540px;overflow:hidden;
+    background:var(--bg);padding:var(--pad);
+    display:flex;flex-direction:column;justify-content:center;
+    page-break-after:always;break-after:page;
+  }
+  .slide:last-child{page-break-after:auto;break-after:auto}
+
+  /* Screen-only: stack slides with a gap so you can scroll the deck.
+     Print: exactly one slide per page, no gaps, no shadows. */
+  @media screen{
+    body{padding:24px;display:flex;flex-direction:column;align-items:center;gap:24px}
+    .slide{box-shadow:0 18px 50px -20px rgba(0,0,0,.9);border-radius:6px}
+  }
+  @page{ size:960px 540px; margin:0 }
+  @media print{
+    body{padding:0;gap:0;display:block}
+    .slide{border-radius:0;box-shadow:none}
+  }
+
+  /* ---- shared furniture ---- */
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;
+           color:var(--accent);margin-bottom:14px}
+  h1{font-size:52px;line-height:1.08;font-weight:800;letter-spacing:-.02em}
+  h1 .a{color:var(--accent)}
+  h2{font-size:38px;line-height:1.12;font-weight:800;letter-spacing:-.02em;margin-bottom:8px}
+  h2 .a{color:var(--accent)}
+  .sub{font-size:16px;line-height:1.55;color:var(--ink-dim);max-width:640px;margin-top:18px}
+  .kicker{font-size:13px;color:var(--ink-faint);margin-top:22px}
+
+  .foot{position:absolute;left:var(--pad);right:var(--pad);bottom:28px;
+        display:flex;align-items:center;gap:10px;
+        font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint)}
+  .foot .num{margin-left:auto;letter-spacing:.08em}
+
+  /* ---- cards ---- */
+  .row{display:flex;gap:16px;margin-top:30px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:26px}
+  .card{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+        padding:20px 22px}
+  .card.hl{border-color:var(--accent);background:linear-gradient(160deg,rgba(45,212,191,.10),transparent)}
+  .card .big{font-size:32px;font-weight:800;letter-spacing:-.02em;color:var(--alert);margin-bottom:8px}
+  .card.hl .big,.card .big.ok{color:var(--accent)}
+  .card h3{font-size:15px;font-weight:700;margin-bottom:7px}
+  .card p{font-size:12.5px;line-height:1.5;color:var(--ink-dim)}
+
+  /* chips: small labelled pills, for a hero slide */
+  .chips{display:flex;gap:12px;margin-top:32px}
+  .chip{display:flex;align-items:center;gap:10px;background:var(--surface);
+        border:1px solid var(--line);border-radius:9px;padding:12px 16px;font-size:13px;font-weight:600}
+  .chip i{width:26px;height:26px;border-radius:7px;background:rgba(45,212,191,.12);
+          border:1px solid rgba(45,212,191,.3);display:flex;align-items:center;justify-content:center;
+          color:var(--accent);font-size:12px;font-weight:800;font-family:var(--mono)}
+
+  /* flow: boxes joined by arrows, for a "how it works" slide */
+  .flow{display:flex;align-items:stretch;gap:0;margin-top:28px}
+  .step{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:10px;
+        padding:16px;text-align:center}
+  .step.hl{border-color:var(--accent)}
+  .step .t{font-size:14px;font-weight:700}
+  .step .d{font-size:11.5px;color:var(--ink-dim);margin-top:5px}
+  .arrow{flex:0 0 34px;display:flex;align-items:center;justify-content:center;color:var(--ink-faint);font-size:14px}
+
+  /* feature grid rows: icon, title, body */
+  .feat{display:flex;gap:14px;background:var(--surface);border:1px solid var(--line);
+        border-radius:10px;padding:15px 17px}
+  .feat i{flex:0 0 30px;height:30px;border-radius:8px;background:rgba(45,212,191,.10);
+          border:1px solid rgba(45,212,191,.25);display:flex;align-items:center;justify-content:center;
+          color:var(--accent);font-family:var(--mono);font-size:12px;font-weight:800}
+  .feat h3{font-size:13.5px;font-weight:700;margin-bottom:4px}
+  .feat p{font-size:11.5px;line-height:1.45;color:var(--ink-dim)}
+
+  /* table */
+  table{width:100%;border-collapse:collapse;margin-top:24px;font-size:13px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+  th{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);font-weight:700}
+  td.k{font-weight:700}
+  td .ok{color:var(--accent);font-weight:700}
+  td .no{color:var(--alert);font-weight:700}
+
+  /* quote */
+  .quote{font-size:30px;line-height:1.3;font-weight:700;letter-spacing:-.015em;max-width:760px}
+  .quote .a{color:var(--accent)}
+  .attrib{margin-top:24px;font-size:13px;color:var(--ink-faint)}
+
+  /* closing */
+  .cta{display:flex;gap:12px;margin-top:30px}
+  .btn{font-size:13px;font-weight:700;padding:13px 24px;border-radius:8px;
+       border:1px solid var(--line);color:var(--ink)}
+  .btn.p{background:var(--accent);border-color:var(--accent);color:#04140F}
+
+  /* decorative corner wash, kept subtle and print-safe */
+  .wash{position:absolute;width:520px;height:520px;border-radius:50%;right:-160px;top:-190px;
+        background:radial-gradient(circle,rgba(45,212,191,.13),transparent 66%);pointer-events:none}
+</style>
+</head>
+<body></body>
+<script>
+const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+// `~text~` marks the accent span, so content stays free of markup
+const acc=s=>String(s==null?'':s).replace(/~([^~]+)~/g,'<span class="a">$1</span>');
+
+let BRAND={name:'',url:''};
+
+function slide(type){
+  const s=el('section','slide');
+  s.dataset.type=type;
+  return s;
+}
+function footer(s,i,total){
+  if(i===0) return;                       // title slide carries no footer
+  const f=el('div','foot');
+  f.appendChild(el('span','', BRAND.name || ''));
+  if(BRAND.url) f.appendChild(el('span','', '&middot; ' + BRAND.url));
+  f.appendChild(el('span','num', String(i+1).padStart(2,'0')));
+  s.appendChild(f);
+}
+
+/* ------------------------------------------------------------------ types
+   Each takes (slideEl, data). Add your own freely; the key in content.json
+   selects the function by name.                                            */
+const TYPES = {
+
+  title(s,d){
+    s.appendChild(el('div','wash'));
+    if(d.eyebrow) s.appendChild(el('div','eyebrow',d.eyebrow));
+    s.appendChild(el('h1','',acc(d.title)));
+    if(d.sub) s.appendChild(el('div','sub',acc(d.sub)));
+    if(d.chips){
+      const r=el('div','chips');
+      d.chips.forEach(c=>{
+        const x=el('div','chip');
+        x.appendChild(el('i','',(c.tag||'&bull;')));
+        x.appendChild(el('span','',c.label||c));
+        r.appendChild(x);
+      });
+      s.appendChild(r);
+    }
+  },
+
+  stats(s,d){
+    if(d.eyebrow) s.appendChild(el('div','eyebrow',d.eyebrow));
+    s.appendChild(el('h2','',acc(d.title)));
+    if(d.sub) s.appendChild(el('div','sub',acc(d.sub)));
+    const r=el('div','row');
+    (d.items||[]).forEach(it=>{
+      const c=el('div','card'+(it.highlight?' hl':''));
+      if(it.stat) c.appendChild(el('div','big'+(it.good?' ok':''),it.stat));
+      if(it.title) c.appendChild(el('h3','',it.title));
+      if(it.body) c.appendChild(el('p','',it.body));
+      r.appendChild(c);
+    });
+    s.appendChild(r);
+    if(d.kicker) s.appendChild(el('div','kicker',acc(d.kicker)));
+  },
+
+  flow(s,d){
+    if(d.eyebrow) s.appendChild(el('div','eyebrow',d.eyebrow));
+    s.appendChild(el('h2','',acc(d.title)));
+    const f=el('div','flow');
+    (d.steps||[]).forEach((st,i)=>{
+      if(i) f.appendChild(el('div','arrow','&rarr;'));
+      const b=el('div','step'+(st.highlight?' hl':''));
+      b.appendChild(el('div','t',st.title));
+      if(st.body) b.appendChild(el('div','d',st.body));
+      f.appendChild(b);
+    });
+    s.appendChild(f);
+    if(d.items){
+      const r=el('div','row');
+      d.items.forEach(it=>{
+        const c=el('div','card'+(it.highlight?' hl':''));
+        if(it.stat) c.appendChild(el('div','big'+(it.good!==false?' ok':''),it.stat));
+        if(it.body) c.appendChild(el('p','',it.body));
+        r.appendChild(c);
+      });
+      s.appendChild(r);
+    }
+    if(d.kicker) s.appendChild(el('div','kicker',acc(d.kicker)));
+  },
+
+  features(s,d){
+    if(d.eyebrow) s.appendChild(el('div','eyebrow',d.eyebrow));
+    s.appendChild(el('h2','',acc(d.title)));
+    const g=el('div','grid2');
+    (d.items||[]).forEach(it=>{
+      const f=el('div','feat');
+      f.appendChild(el('i','',it.tag||'&bull;'));
+      const t=el('div');
+      t.appendChild(el('h3','',it.title));
+      if(it.body) t.appendChild(el('p','',it.body));
+      f.appendChild(t);
+      g.appendChild(f);
+    });
+    s.appendChild(g);
+  },
+
+  table(s,d){
+    if(d.eyebrow) s.appendChild(el('div','eyebrow',d.eyebrow));
+    s.appendChild(el('h2','',acc(d.title)));
+    const t=el('table');
+    if(d.columns){
+      const hr=el('tr');
+      d.columns.forEach(c=>hr.appendChild(el('th','',c)));
+      t.appendChild(el('thead','')).appendChild(hr);
+    }
+    const tb=el('tbody');
+    (d.rows||[]).forEach(row=>{
+      const tr=el('tr');
+      row.forEach((cell,i)=>{
+        const td=el('td',i===0?'k':'');
+        td.innerHTML=String(cell).replace(/^\+(.*)$/,'<span class="ok">$1</span>')
+                                 .replace(/^-(.*)$/,'<span class="no">$1</span>');
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    s.appendChild(t);
+    if(d.kicker) s.appendChild(el('div','kicker',acc(d.kicker)));
+  },
+
+  quote(s,d){
+    s.appendChild(el('div','wash'));
+    if(d.eyebrow) s.appendChild(el('div','eyebrow',d.eyebrow));
+    s.appendChild(el('div','quote',acc(d.quote)));
+    if(d.attrib) s.appendChild(el('div','attrib',d.attrib));
+  },
+
+  closing(s,d){
+    s.appendChild(el('div','wash'));
+    if(d.eyebrow) s.appendChild(el('div','eyebrow',d.eyebrow));
+    s.appendChild(el('h1','',acc(d.title)));
+    if(d.sub) s.appendChild(el('div','sub',acc(d.sub)));
+    if(d.cta){
+      const c=el('div','cta');
+      d.cta.forEach((b,i)=>c.appendChild(el('div','btn'+(i===0?' p':''),b)));
+      s.appendChild(c);
+    }
+  },
+};
+
+/* ------------------------------------------------------------------ render */
+window.__render = function(content, cut){
+  document.body.innerHTML='';
+  BRAND = content.brand || {name:'',url:''};
+  if(content.theme){                       // optional per-deck token overrides
+    for(const [k,v] of Object.entries(content.theme))
+      document.documentElement.style.setProperty('--'+k, v);
+  }
+  let slides = content.slides || [];
+  if(cut && content.cuts && content.cuts[cut]){
+    const want = content.cuts[cut];        // list of slide ids, in order
+    const byId = Object.fromEntries(slides.filter(s=>s.id).map(s=>[s.id,s]));
+    slides = want.map(id=>byId[id]).filter(Boolean);
+  }
+  slides.forEach((d,i)=>{
+    const fn = TYPES[d.type];
+    if(!fn){ console.warn('unknown slide type: '+d.type); return; }
+    const s = slide(d.type);
+    fn(s,d);
+    footer(s,i,slides.length);
+    document.body.appendChild(s);
+  });
+  window.__slides = slides.map((d,i)=>({i:i+1,type:d.type,title:(d.title||d.quote||'').slice(0,60)}));
+  return slides.length;
+};
+</script>
+</html>

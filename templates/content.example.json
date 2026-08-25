@@ -1,0 +1,105 @@
+{
+  "brand": {
+    "name": "Your Product",
+    "url": "yourproduct.com"
+  },
+
+  "_theme_note": "Optional. Any CSS custom property from deck.html can be overridden here, so one content file can render in a different brand without touching the template.",
+  "theme": {
+    "accent": "#2DD4BF",
+    "alert": "#EC4899"
+  },
+
+  "_cuts_note": "Same content, different decks. List slide ids in the order you want them. Build with --cut investor. Slides without an id can never appear in a cut, which is a useful way to keep a slide in the long deck only.",
+  "cuts": {
+    "investor": ["hero", "problem", "how", "close"],
+    "onepager": ["hero", "capabilities", "close"]
+  },
+
+  "_text_note": "Wrap a phrase in ~tildes~ to colour it with the accent. Keeps markup out of the copy.",
+
+  "slides": [
+    {
+      "id": "hero",
+      "type": "title",
+      "eyebrow": "Your Product",
+      "title": "One clear claim.<br>~Stated plainly.~",
+      "sub": "A single sentence that says what this is and who it is for. Resist the urge to add a second.",
+      "chips": [
+        { "tag": "01", "label": "Proof point" },
+        { "tag": "02", "label": "Proof point" },
+        { "tag": "03", "label": "Proof point" }
+      ]
+    },
+    {
+      "id": "problem",
+      "type": "stats",
+      "eyebrow": "The problem",
+      "title": "Why the current approach ~doesn't work~",
+      "items": [
+        { "stat": "2-8 GB", "title": "The cost today", "body": "One concrete, checkable number beats three adjectives. Say where it comes from." },
+        { "stat": "30-60s", "title": "The delay today", "body": "Keep each card to one idea. If it needs a comma-spliced sentence, it is two cards." },
+        { "stat": "15-30", "title": "The gap today", "body": "Numbers in the alert colour read as the cost of the status quo." }
+      ]
+    },
+    {
+      "id": "how",
+      "type": "flow",
+      "eyebrow": "How it works",
+      "title": "The mechanism, ~in four steps~",
+      "steps": [
+        { "title": "Input", "body": "what the user brings" },
+        { "title": "Your product", "body": "what it does to it", "highlight": true },
+        { "title": "The work", "body": "where it happens" },
+        { "title": "Result", "body": "what they get back" }
+      ],
+      "items": [
+        { "stat": "0.8%", "body": "A headline number that proves the mechanism, with the measurement conditions stated.", "highlight": true },
+        { "stat": "0.01%", "body": "A second number, ideally one a sceptic would ask for next." }
+      ],
+      "kicker": "One line that lands the point of the slide."
+    },
+    {
+      "id": "capabilities",
+      "type": "features",
+      "eyebrow": "Capabilities",
+      "title": "What it ~actually does~",
+      "items": [
+        { "tag": "01", "title": "Capability", "body": "One sentence. Concrete verb, no adjectives." },
+        { "tag": "02", "title": "Capability", "body": "If two capabilities need the same sentence, cut one." },
+        { "tag": "03", "title": "Capability", "body": "Six is the most a reader will take in at a glance." },
+        { "tag": "04", "title": "Capability", "body": "Name the thing the way users say it, not the internal name." },
+        { "tag": "05", "title": "Capability", "body": "Prefer what it does over how it is built." },
+        { "tag": "06", "title": "Capability", "body": "Leave the rest for the appendix." }
+      ]
+    },
+    {
+      "id": "compare",
+      "type": "table",
+      "eyebrow": "Comparison",
+      "title": "How we ~compare~",
+      "columns": ["", "Us", "Alternative A", "Alternative B"],
+      "rows": [
+        ["Dimension", "+Yes", "-No", "-No"],
+        ["Dimension", "+Fast", "Slow", "Slow"],
+        ["Dimension", "+Included", "Add-on", "-Missing"]
+      ],
+      "kicker": "Prefix a cell with + for accent, - for alert. Be fair; a comparison that flatters you everywhere reads as marketing."
+    },
+    {
+      "id": "quote",
+      "type": "quote",
+      "eyebrow": "In practice",
+      "quote": "A real sentence someone said, that a prospect would ~recognise as their own problem~.",
+      "attrib": "Role, Company"
+    },
+    {
+      "id": "close",
+      "type": "closing",
+      "eyebrow": "Next",
+      "title": "The one thing you want<br>them to ~do next.~",
+      "sub": "Make the ask specific. 'Book a technical deep dive' beats 'get in touch'.",
+      "cta": ["Book a demo", "yourproduct.com"]
+    }
+  ]
+}
