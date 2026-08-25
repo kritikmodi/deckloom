@@ -48,6 +48,40 @@ python3 scripts/export_pptx.py                 # -> out/deck.pptx
 To see the deck while writing it, open `deck.html` in a browser and reload. It
 scrolls as a stack of slides on screen and paginates correctly when printed.
 
+## Match the product's brand automatically
+
+If the product has a codebase, do not ask the user for hex codes and do not
+eyedrop a screenshot. Read the brand out of the repo:
+
+```bash
+python3 scripts/detect_brand.py ../their-product              # report
+python3 scripts/detect_brand.py ../their-product --write content.json
+```
+
+It reads design token files, tailwind configs, CSS custom properties, SCSS and
+Less variables, JS/TS theme objects and the web manifest, then reports the fonts
+in use, the icon library from package.json, and any logo files it found.
+
+Two things make the output trustworthy rather than merely confident:
+
+**Build output is skipped.** A `dist/` folder is full of vendored CSS from
+component libraries, and those colours are not the brand.
+
+**The palette is checked for coherence, not just matched by name.** A repo can
+define `--surface` for its light theme and `--bg` for its dark one; taking both
+gives a white card on a black slide. Values that fail are replaced and the
+rejection is printed, never swapped silently:
+
+```
+rejected (kept the deck coherent)
+  surface #FFFFFF rejected: luma 1.00 vs bg 0.07, not the same theme
+  accent #A8B4C2 rejected: saturation 0.13 is too low to read as an accent
+```
+
+Treat the result as a strong starting point. Show the user what was detected and
+what was rejected, and confirm before sending the deck anywhere. If the repo has
+no tokens at all, say so and ask, rather than inventing a palette.
+
 ## Slide types
 
 Seven ship in the template. The `type` field on each slide selects one.

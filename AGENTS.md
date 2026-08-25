@@ -36,6 +36,21 @@ python3 scripts/export_pptx.py                 # -> out/deck.pptx
 
 Every script supports `--help`.
 
+## Match the product's brand from its code
+
+Do not ask for hex codes if a codebase is available:
+
+```bash
+python3 scripts/detect_brand.py ../their-product --write content.json
+```
+
+Reads tokens, tailwind, CSS variables, JS theme objects and the manifest; also
+reports fonts, the icon library and logo files. It skips build output, and
+rejects colours that do not cohere (a light-theme surface on a dark background,
+a grey "primary" that cannot work as an accent), printing what it rejected.
+
+Show the user the detected palette and the rejections before building.
+
 ## Where things live
 
 | Path | Purpose |

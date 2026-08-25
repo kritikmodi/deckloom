@@ -88,6 +88,41 @@ python3 scripts/build.py --cut onepager --out out/onepager.pdf
 
 Every cut reads from the same slides, so they cannot drift apart.
 
+## Match the product's brand automatically
+
+Point it at the product's codebase and it works out the palette:
+
+```bash
+python3 scripts/detect_brand.py ../my-product --write content.json
+```
+
+```
+  theme
+    accent   #005F96   <- most saturated colour (name match was grey)
+    bg       #0F1117   <- bg (css-var)
+    surface  #1E2026   <- derived from bg (detected value was a different theme)
+    ink      #E6E8EF   <- text (css-var)
+    alert    #FF5A5B   <- danger (css-var)
+
+  rejected (kept the deck coherent)
+    surface #FFFFFF rejected: luma 1.00 vs bg 0.07, not the same theme
+    accent #A8B4C2 rejected: saturation 0.13 is too low to read as an accent
+
+  fonts     Inter
+  icons     lucide-react
+  logos     gui/public/icon/logo-wordmark-dark.svg
+```
+
+It reads design token files, tailwind configs, CSS custom properties, SCSS and
+Less variables, JS/TS theme objects and the web manifest. Build output is
+skipped, because a `dist/` folder is full of vendored component-library CSS that
+is not the brand.
+
+Crucially it checks the palette holds together rather than trusting name matches
+alone. A repo that defines `--surface` for its light theme and `--bg` for its
+dark one would otherwise produce a white card on a black slide. Rejections are
+printed, never applied silently.
+
 ## Slide types
 
 | Type | For | Notes |
@@ -111,6 +146,7 @@ numbering and print rules are handled for you.
 | `SKILL.md` | the brief: pipeline, slide types, rules for good decks |
 | `scripts/build.py` | content + design to PDF, with cuts and PNG export |
 | `scripts/export_pptx.py` | PDF to PowerPoint, one image per slide |
+| `scripts/detect_brand.py` | read colours, fonts, icons and logos out of a codebase |
 | `templates/deck.html` | the slide system and design tokens |
 | `templates/content.example.json` | a worked example of every slide type |
 | `references/DESIGN.md` | tokens, type scale, how to rebrand |
