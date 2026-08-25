@@ -1,4 +1,4 @@
-# Product deck as Code
+# Deckloom
 
 Build product decks from code instead of a slide editor. Content is JSON, the
 design is one HTML file, and headless Chrome renders it to a PDF at exactly
@@ -36,8 +36,8 @@ rebrands and reviews cheap.
 ## Install
 
 ```bash
-git clone https://github.com/kritikmodi/product-deck-as-code.git
-cd product-deck-as-code
+git clone https://github.com/kritikmodi/deckloom.git
+cd deckloom
 pip install -r requirements.txt && playwright install chromium
 ```
 
@@ -47,7 +47,7 @@ Copilot, Gemini CLI, Aider, Windsurf, Zed and others.
 **Claude Code / claude.ai.** Install as a skill so it loads on demand:
 
 ```bash
-cp -r product-deck-as-code ~/.claude/skills/product-deck
+cp -r deckloom ~/.claude/skills/deckloom
 ```
 
 **No agent at all.** Plain Python and a headless browser. No vendor SDK, no model

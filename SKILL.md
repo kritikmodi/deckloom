@@ -1,9 +1,9 @@
 ---
-name: product-deck
+name: deckloom
 description: Build product decks and slide documents from code - pitch decks, investor overviews, product one-pagers, sales decks, technical overviews, brochures and conference talks - by writing content as JSON and rendering an HTML slide system to PDF or PPTX. Use when asked to create, edit, re-cut, re-brand or update any presentation or slide deck.
 ---
 
-# Product deck as code
+# Deckloom
 
 Decks are content plus a design system, and they are almost never made once. The
 same twelve facts get recut as an investor overview, a sales deck, a one-pager

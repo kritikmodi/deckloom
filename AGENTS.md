@@ -2,7 +2,7 @@
 
 Instructions for any coding agent working in this repository.
 
-This repo builds **product decks from code**: pitch decks, investor overviews,
+Deckloom builds **product decks from code**: pitch decks, investor overviews,
 one-pagers, sales decks, technical overviews, brochures. Content is JSON, the
 design is one HTML file, headless Chrome renders the PDF.
 
