@@ -84,7 +84,8 @@ def main():
             slides = pg.locator(".slide")
             for i in range(slides.count()):
                 slides.nth(i).screenshot(path=str(png_dir / f"slide_{i+1:02d}.png"))
-            print(f"wrote {png_dir.relative_to(HERE)}/ ({n} images)")
+            shown = png_dir.relative_to(HERE) if png_dir.is_relative_to(HERE) else png_dir
+            print(f"wrote {shown}/ ({n} images)")
 
         b.close()
 

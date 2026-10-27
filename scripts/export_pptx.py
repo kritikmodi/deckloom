@@ -69,7 +69,8 @@ def main():
     doc.close()
 
     mb = out.stat().st_size / 1e6
-    print(f"wrote {out.relative_to(HERE)}  ({n} slides, {mb:.1f} MB, {a.dpi} dpi)")
+    shown = out.relative_to(HERE) if out.is_relative_to(HERE) else out
+    print(f"wrote {shown}  ({n} slides, {mb:.1f} MB, {a.dpi} dpi)")
     print("slides are images: to change wording, edit content.json and rebuild")
 
 

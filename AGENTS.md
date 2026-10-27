@@ -71,11 +71,12 @@ Show the user the detected palette and the rejections before building.
   with the measurement conditions on the slide.
 - **The accent colour is punctuation.** One accent phrase per headline.
 - **Comparison tables must be fair.** Winning every row reads as marketing.
-- **Verify the output, do not assume.** Check the page size is 960x540pt and look
-  at the PNGs; slide overflow is clipped silently rather than erroring.
+- **Verify the output, do not assume.** Check the page size is 960x540pt, that
+  the page corner is slide background rather than white paper, and look at the
+  PNGs; slide overflow is clipped silently rather than erroring.
 
 ```bash
-python3 -c "import pymupdf; d=pymupdf.open('out/deck.pdf'); print(len(d), d[0].rect)"
+python3 -c "import pymupdf; d=pymupdf.open('out/deck.pdf'); print(len(d), d[0].rect, d[0].get_pixmap().pixel(2, 2))"
 ```
 
 ## Do not commit

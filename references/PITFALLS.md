@@ -13,10 +13,16 @@ Chrome maps CSS pixels to points at 96dpi, so a 960px-wide slide becomes a
 and PowerPoint or Keynote will letterbox it on import.
 
 `build.py` prints at 13.333 x 7.5in with `scale=4/3`, which lands exactly on
-960x540pt. Verify after any change:
+960x540pt.
+
+Do not give `@page` a `size` in `deck.html`. Chrome lets a CSS page size win
+over the scale, so the slide is laid out at 720x405pt and centred on a white
+960x540pt page. The page size check still passes, and the PNGs look fine
+because they are screenshots, not the PDF. Verify both the size and that the
+corner is slide background, not white paper:
 
 ```bash
-python3 -c "import pymupdf; d=pymupdf.open('out/deck.pdf'); print(d[0].rect)"
+python3 -c "import pymupdf; d=pymupdf.open('out/deck.pdf'); print(d[0].rect, d[0].get_pixmap().pixel(2, 2))"
 ```
 
 ## Slides split across pages
