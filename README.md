@@ -1,13 +1,17 @@
 # Deckloom
 
-Build product decks from code instead of a slide editor. Content is JSON, the
-design is one HTML file, and headless Chrome renders it to a PDF at exactly
-PowerPoint's 16:9 page size. Export to `.pptx` if someone needs one.
+Let your AI build decks for you. Tell your coding agent what the deck should
+say; it edits a JSON file, and headless Chrome renders a PDF at exactly
+PowerPoint's 16:9 page size. Export to `.pptx` if someone needs one. Works with
+Claude Code, Codex, Cursor, Copilot and any other agent that can edit a file.
 
 Pitch decks, investor overviews, one-pagers, sales decks, technical overviews,
 brochures, conference talks. One content file, many decks.
 
-![Slides rendered by the pipeline](docs/slides.png)
+![A prompt, the agent's edit to content.json, and the PDF it renders](docs/demo.gif)
+
+The agent panel is a mock-up; the slides are not. They are exactly what
+`scripts/build.py` renders from that `content.json`.
 
 ```
 content.json ──► deck.html ──► headless Chrome ──► deck.pdf ──► deck.pptx
@@ -125,6 +129,8 @@ printed, never applied silently.
 
 ## Slide types
 
+![Slides rendered by the pipeline](docs/slides.png)
+
 | Type | For | Notes |
 |---|---|---|
 | `title` | the opening claim | eyebrow, two-line headline, proof chips |
@@ -178,8 +184,7 @@ MIT (c) 2026 Kritik Modi - see [LICENSE](LICENSE).
 
 <!--
 GitHub repo description (About field, set in repo settings):
-Product decks from code, not a slide editor. JSON content, one HTML design file,
-rendered to PDF and PPTX.
+Let your AI build decks for you
 
 Suggested topics: claude-skill, claude-code, presentation, slides, pptx, pdf,
 playwright, deck-as-code, pitch-deck, developer-marketing
