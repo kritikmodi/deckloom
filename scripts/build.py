@@ -12,7 +12,9 @@ the layout, what you see on screen is exactly what lands in the PDF.
 import argparse, json, pathlib, sys
 from playwright.sync_api import sync_playwright, Error as PWError
 
-HERE = pathlib.Path(__file__).resolve().parent.parent
+# Working files live where you run from, not beside the script, so the
+# tool also works when installed as a skill or plugin.
+WORK = pathlib.Path.cwd()
 W, H = 960, 540
 
 
@@ -27,13 +29,13 @@ def main():
     ap.add_argument("--scale", type=float, default=2.0, help="PNG resolution multiplier")
     a = ap.parse_args()
 
-    content_path = HERE / a.content
+    content_path = WORK / a.content
     if not content_path.exists():
         sys.exit(f"no content file at {content_path}\n"
                  f"copy templates/content.example.json to {a.content} and edit it")
     content = json.loads(content_path.read_text())
 
-    out = HERE / a.out
+    out = WORK / a.out
     out.parent.mkdir(parents=True, exist_ok=True)
 
     with sync_playwright() as p:
@@ -45,7 +47,7 @@ def main():
         pg.on("pageerror", lambda e: errors.append(str(e)))
         pg.on("console", lambda m: errors.append("console: " + m.text)
               if m.type in ("error", "warning") else None)
-        pg.goto((HERE / a.deck).as_uri())
+        pg.goto((WORK / a.deck).as_uri())
 
         try:
             n = pg.evaluate("([c, cut]) => window.__render(c, cut)", [content, a.cut])
@@ -84,7 +86,7 @@ def main():
             slides = pg.locator(".slide")
             for i in range(slides.count()):
                 slides.nth(i).screenshot(path=str(png_dir / f"slide_{i+1:02d}.png"))
-            shown = png_dir.relative_to(HERE) if png_dir.is_relative_to(HERE) else png_dir
+            shown = png_dir.relative_to(WORK) if png_dir.is_relative_to(WORK) else png_dir
             print(f"wrote {shown}/ ({n} images)")
 
         b.close()

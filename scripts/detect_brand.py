@@ -304,9 +304,7 @@ def main():
     print(json.dumps({"theme": theme}, indent=2))
 
     if a.write:
-        target = pathlib.Path(a.write)
-        if not target.is_absolute():
-            target = pathlib.Path(__file__).resolve().parent.parent / target
+        target = pathlib.Path(a.write).resolve()
         if not target.exists():
             sys.exit(f"\nno file at {target}")
         content = json.loads(target.read_text())

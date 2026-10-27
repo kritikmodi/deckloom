@@ -16,7 +16,9 @@ want a real .pptx authoring library instead.
 """
 import argparse, pathlib, sys
 
-HERE = pathlib.Path(__file__).resolve().parent.parent
+# Working files live where you run from, not beside the script, so the
+# tool also works when installed as a skill or plugin.
+WORK = pathlib.Path.cwd()
 
 
 def main():
@@ -38,10 +40,10 @@ def main():
     except ImportError:
         sys.exit("needs python-pptx:  pip install python-pptx")
 
-    pdf = HERE / a.pdf
+    pdf = WORK / a.pdf
     if not pdf.exists():
         sys.exit(f"no deck at {pdf}. Run scripts/build.py first.")
-    out = HERE / (a.out or str(pdf.with_suffix(".pptx")))
+    out = WORK / (a.out or str(pdf.with_suffix(".pptx")))
 
     doc = pymupdf.open(pdf)
     page = doc[0]
@@ -69,7 +71,7 @@ def main():
     doc.close()
 
     mb = out.stat().st_size / 1e6
-    shown = out.relative_to(HERE) if out.is_relative_to(HERE) else out
+    shown = out.relative_to(WORK) if out.is_relative_to(WORK) else out
     print(f"wrote {shown}  ({n} slides, {mb:.1f} MB, {a.dpi} dpi)")
     print("slides are images: to change wording, edit content.json and rebuild")
 
