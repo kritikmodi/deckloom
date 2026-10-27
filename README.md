@@ -1,5 +1,7 @@
 # Deckloom
 
+[![skills.sh](https://skills.sh/b/kritikmodi/deckloom)](https://skills.sh/kritikmodi/deckloom)
+
 Let your AI build decks for you. Tell your coding agent what the deck should
 say; it edits a JSON file, and headless Chrome renders a PDF at exactly
 PowerPoint's 16:9 page size. Export to `.pptx` if someone needs one. Works with
