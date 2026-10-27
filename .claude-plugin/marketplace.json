@@ -1,0 +1,15 @@
+{
+  "name": "deckloom",
+  "description": "Let your AI build decks for you: pitch decks, one-pagers and sales decks written as JSON and rendered to PDF and PPTX.",
+  "owner": {
+    "name": "Kritik Modi",
+    "url": "https://github.com/kritikmodi"
+  },
+  "plugins": [
+    {
+      "name": "deckloom",
+      "source": "./",
+      "description": "Let your AI build decks for you: pitch decks, one-pagers and sales decks written as JSON and rendered to PDF and PPTX."
+    }
+  ]
+}

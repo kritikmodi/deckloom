@@ -1,0 +1,14 @@
+{
+  "name": "deckloom",
+  "displayName": "Deckloom",
+  "version": "0.1.0",
+  "description": "Let your AI build decks for you: pitch decks, one-pagers and sales decks written as JSON and rendered to PDF and PPTX.",
+  "author": {
+    "name": "Kritik Modi",
+    "url": "https://github.com/kritikmodi"
+  },
+  "homepage": "https://github.com/kritikmodi/deckloom",
+  "repository": "https://github.com/kritikmodi/deckloom",
+  "license": "MIT",
+  "keywords": ["slides", "pitch-deck", "presentation", "pdf", "pptx", "deck-as-code"]
+}

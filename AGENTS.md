@@ -56,6 +56,7 @@ Show the user the detected palette and the rejections before building.
 | Path | Purpose |
 |---|---|
 | `SKILL.md` | full brief: pipeline, slide types, rules for good decks |
+| `.claude-plugin/` | plugin and marketplace manifests; raise `version` in `plugin.json` on every release, or installed copies never update |
 | `references/DESIGN.md` | tokens, type scale, rebranding |
 | `references/SLIDE-TYPES.md` | what each slide type is for and how it fails |
 | `references/PITFALLS.md` | **read before debugging** |

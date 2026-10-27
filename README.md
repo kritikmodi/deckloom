@@ -50,7 +50,21 @@ pip install -r requirements.txt && playwright install chromium
 **Any agent.** `AGENTS.md` at the repo root is read natively by Codex, Cursor,
 Copilot, Gemini CLI, Aider, Windsurf, Zed and others.
 
-**Claude Code / claude.ai.** Install as a skill so it loads on demand:
+**Claude Code.** Install it as a plugin, from inside a session:
+
+```
+/plugin install deckloom --marketplace kritikmodi/deckloom
+```
+
+Or from your shell:
+
+```bash
+claude plugin marketplace add kritikmodi/deckloom
+claude plugin install deckloom@deckloom
+```
+
+Then run it from your own project: outputs land there, not in the plugin.
+Without the plugin system, copy it in as a skill instead:
 
 ```bash
 cp -r deckloom ~/.claude/skills/deckloom
