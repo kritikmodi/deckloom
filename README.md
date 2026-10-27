@@ -44,8 +44,14 @@ rebrands and reviews cheap.
 ```bash
 git clone https://github.com/kritikmodi/deckloom.git
 cd deckloom
-pip install -r requirements.txt && playwright install chromium
+pip install -r requirements.txt
+playwright install chromium
 ```
+
+What that downloads: `pip` installs Playwright, plus PyMuPDF and python-pptx for
+the PPTX export, from PyPI. `playwright install chromium` fetches the headless
+Chromium build that Playwright drives. Nothing else is fetched: building a deck
+makes no network calls unless your own `deck.html` loads web fonts or images.
 
 **Any agent.** `AGENTS.md` at the repo root is read natively by Codex, Cursor,
 Copilot, Gemini CLI, Aider, Windsurf, Zed and others.
